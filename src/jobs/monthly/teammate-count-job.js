@@ -52,18 +52,16 @@ module.exports = async function runMonthlyTeammateCountJob(monthKey) {
         const duoStatsByPuuid = stat.duo || {};
 
         // convert duo puuid keys to userId keys
-        const duo = {};
-        Object.entries(duoStatsByPuuid).forEach(([matePuuid, mateStat]) => {
-            duo[userByPuuid[matePuuid]._id] = mateStat;
+        return Object.entries(duoStatsByPuuid).map(([matePuuid, mateStat]) => {
+            return {
+                monthKey,
+                userId,
+                duoId: userByPuuid[matePuuid]._id,
+                ...mateStat,
+                createdAt: new Date()
+            }
         });
-
-        return {
-            monthKey,
-            userId,
-            duo,
-            createdAt: new Date(),
-        };
-    });
+    }).flat();
 
     await saveDuoStatsBulk(duoStatRows);
 };

@@ -7,7 +7,10 @@ async function saveDuoStatsBulk(duoStatRows) {
     const bulk = db.collection("duo_stats").initializeUnorderedBulkOp();
 
     for (const row of duoStatRows) {
-        bulk.find(row)
+        bulk.find({
+            userId: row.userId,
+            duoId: row.duoId
+        })
             .upsert()
             .updateOne({$set: row});
     }
